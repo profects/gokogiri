@@ -12,9 +12,9 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/moovweb/gokogiri/help"
-	. "github.com/moovweb/gokogiri/util"
-	"github.com/moovweb/gokogiri/xpath"
+	"github.com/profects/gokogiri/help"
+	. "github.com/profects/gokogiri/util"
+	"github.com/profects/gokogiri/xpath"
 )
 
 type Document interface {
