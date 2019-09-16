@@ -5,7 +5,7 @@ import "C"
 import (
 	"bytes"
 	"errors"
-	. "github.com/profects/gokogiri/util"
+	"github.com/profects/gokogiri/util"
 	"github.com/profects/gokogiri/xml"
 	"unsafe"
 )
@@ -86,8 +86,8 @@ func parsefragment(document xml.Document, node *xml.XmlNode, content, url []byte
 }
 
 func ParseFragment(content, inEncoding, url []byte, options xml.ParseOption, outEncoding []byte) (fragment *xml.DocumentFragment, err error) {
-	inEncoding = AppendCStringTerminator(inEncoding)
-	outEncoding = AppendCStringTerminator(outEncoding)
+	inEncoding = util.AppendCStringTerminator(inEncoding)
+	outEncoding = util.AppendCStringTerminator(outEncoding)
 	document := CreateEmptyDocument(inEncoding, outEncoding)
 	fragment, err = parsefragment(document, nil, content, url, options)
 	return

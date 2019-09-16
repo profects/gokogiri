@@ -12,7 +12,7 @@ import "C"
 import (
 	"errors"
 	"github.com/profects/gokogiri/help"
-	. "github.com/profects/gokogiri/util"
+	"github.com/profects/gokogiri/util"
 	"github.com/profects/gokogiri/xml"
 	//"runtime"
 	"unsafe"
@@ -64,8 +64,8 @@ func NewDocument(p unsafe.Pointer, contentLen int, inEncoding, outEncoding []byt
 
 //parse a string to document
 func Parse(content, inEncoding, url []byte, options xml.ParseOption, outEncoding []byte) (doc *HtmlDocument, err error) {
-	inEncoding = AppendCStringTerminator(inEncoding)
-	outEncoding = AppendCStringTerminator(outEncoding)
+	inEncoding = util.AppendCStringTerminator(inEncoding)
+	outEncoding = util.AppendCStringTerminator(outEncoding)
 
 	var docPtr *C.xmlDoc
 	contentLen := len(content)
@@ -75,7 +75,7 @@ func Parse(content, inEncoding, url []byte, options xml.ParseOption, outEncoding
 
 		contentPtr = unsafe.Pointer(&content[0])
 		if len(url) > 0 {
-			url = AppendCStringTerminator(url)
+			url = util.AppendCStringTerminator(url)
 			urlPtr = unsafe.Pointer(&url[0])
 		}
 		if len(inEncoding) > 0 {
@@ -121,7 +121,7 @@ func (doc *HtmlDocument) MetaEncoding() string {
 func (doc *HtmlDocument) SetMetaEncoding(encoding string) (err error) {
 	var encodingPtr unsafe.Pointer = nil
 	if len(encoding) > 0 {
-		encodingBytes := AppendCStringTerminator([]byte(encoding))
+		encodingBytes := util.AppendCStringTerminator([]byte(encoding))
 		encodingPtr = unsafe.Pointer(&encodingBytes[0])
 	}
 	ret := int(C.htmlSetMetaEncoding((*C.xmlDoc)(doc.DocPtr()), (*C.xmlChar)(encodingPtr)))
