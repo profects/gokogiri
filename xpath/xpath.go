@@ -41,7 +41,7 @@ int getXPathObjectType(xmlXPathObject* o) {
 import "C"
 
 import "unsafe"
-import . "github.com/moovweb/gokogiri/util"
+import "github.com/profects/gokogiri/util"
 import "runtime"
 import "errors"
 
@@ -89,13 +89,13 @@ func NewXPath(docPtr unsafe.Pointer) (xpath *XPath) {
 func (xpath *XPath) RegisterNamespace(prefix, href string) bool {
 	var prefixPtr unsafe.Pointer = nil
 	if len(prefix) > 0 {
-		prefixBytes := AppendCStringTerminator([]byte(prefix))
+		prefixBytes := util.AppendCStringTerminator([]byte(prefix))
 		prefixPtr = unsafe.Pointer(&prefixBytes[0])
 	}
 
 	var hrefPtr unsafe.Pointer = nil
 	if len(href) > 0 {
-		hrefBytes := AppendCStringTerminator([]byte(href))
+		hrefBytes := util.AppendCStringTerminator([]byte(href))
 		hrefPtr = unsafe.Pointer(&hrefBytes[0])
 	}
 

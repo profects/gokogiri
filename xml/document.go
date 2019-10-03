@@ -12,9 +12,9 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/moovweb/gokogiri/help"
-	. "github.com/moovweb/gokogiri/util"
-	"github.com/moovweb/gokogiri/xpath"
+	"github.com/profects/gokogiri/help"
+	"github.com/profects/gokogiri/util"
+	"github.com/profects/gokogiri/xpath"
 )
 
 type Document interface {
@@ -120,8 +120,8 @@ const initialFragments = 2
 //
 // TODO: this should probably not be exported.
 func NewDocument(p unsafe.Pointer, contentLen int, inEncoding, outEncoding []byte) (doc *XmlDocument) {
-	inEncoding = AppendCStringTerminator(inEncoding)
-	outEncoding = AppendCStringTerminator(outEncoding)
+	inEncoding = util.AppendCStringTerminator(inEncoding)
+	outEncoding = util.AppendCStringTerminator(outEncoding)
 
 	xmlNode := &XmlNode{Ptr: (*C.xmlNode)(p)}
 	docPtr := (*C.xmlDoc)(p)
@@ -144,8 +144,8 @@ func NewDocument(p unsafe.Pointer, contentLen int, inEncoding, outEncoding []byt
 //
 // If you have an XML file, then ReadFile will automatically determine the encoding according to the XML specification.
 func Parse(content, inEncoding, url []byte, options ParseOption, outEncoding []byte) (doc *XmlDocument, err error) {
-	inEncoding = AppendCStringTerminator(inEncoding)
-	outEncoding = AppendCStringTerminator(outEncoding)
+	inEncoding = util.AppendCStringTerminator(inEncoding)
+	outEncoding = util.AppendCStringTerminator(outEncoding)
 
 	var docPtr *C.xmlDoc
 	contentLen := len(content)
@@ -155,7 +155,7 @@ func Parse(content, inEncoding, url []byte, options ParseOption, outEncoding []b
 		contentPtr = unsafe.Pointer(&content[0])
 
 		if len(url) > 0 {
-			url = AppendCStringTerminator(url)
+			url = util.AppendCStringTerminator(url)
 			urlPtr = unsafe.Pointer(&url[0])
 		}
 		if len(inEncoding) > 0 {
@@ -186,7 +186,7 @@ func ReadFile(filename string, options ParseOption) (doc *XmlDocument, err error
 		return
 	}
 
-	dataBytes := GetCString([]byte(filename))
+	dataBytes := util.GetCString([]byte(filename))
 	dataPtr := unsafe.Pointer(&dataBytes[0])
 	var docPtr *C.xmlDoc
 	docPtr = C.xmlReadFile((*C.char)(dataPtr), nil, C.int(options))
@@ -293,7 +293,7 @@ func (document *XmlDocument) Root() (element *ElementNode) {
 //
 // The value for an ID attribute is guaranteed to be unique within a valid document.
 func (document *XmlDocument) NodeById(id string) (element *ElementNode) {
-	dataBytes := GetCString([]byte(id))
+	dataBytes := util.GetCString([]byte(id))
 	dataPtr := unsafe.Pointer(&dataBytes[0])
 	nodePtr := C.xmlGetID(document.Ptr, (*C.xmlChar)(dataPtr))
 	if nodePtr != nil {
@@ -312,7 +312,7 @@ Use SetNamespace if the element node needs to be in a namespace.
 Note that valid documents have only one child element, referred to as the root node.
 */
 func (document *XmlDocument) CreateElementNode(tag string) (element *ElementNode) {
-	tagBytes := GetCString([]byte(tag))
+	tagBytes := util.GetCString([]byte(tag))
 	tagPtr := unsafe.Pointer(&tagBytes[0])
 	newNodePtr := C.xmlNewNode(nil, (*C.xmlChar)(tagPtr))
 	newNode := NewNode(unsafe.Pointer(newNodePtr), document)
@@ -324,7 +324,7 @@ func (document *XmlDocument) CreateElementNode(tag string) (element *ElementNode
 //
 // The data argument is XML-escaped and used as the content of the node.
 func (document *XmlDocument) CreateTextNode(data string) (text *TextNode) {
-	dataBytes := GetCString([]byte(data))
+	dataBytes := util.GetCString([]byte(data))
 	dataPtr := unsafe.Pointer(&dataBytes[0])
 	nodePtr := C.xmlNewText((*C.xmlChar)(dataPtr))
 	if nodePtr != nil {
@@ -340,7 +340,7 @@ func (document *XmlDocument) CreateTextNode(data string) (text *TextNode) {
 // The data argument will become the content of the newly created node.
 func (document *XmlDocument) CreateCDataNode(data string) (cdata *CDataNode) {
 	dataLen := len(data)
-	dataBytes := GetCString([]byte(data))
+	dataBytes := util.GetCString([]byte(data))
 	dataPtr := unsafe.Pointer(&dataBytes[0])
 	nodePtr := C.xmlNewCDataBlock(document.Ptr, (*C.xmlChar)(dataPtr), C.int(dataLen))
 	if nodePtr != nil {
@@ -354,7 +354,7 @@ func (document *XmlDocument) CreateCDataNode(data string) (cdata *CDataNode) {
 //
 // The data argument will become the content of the comment.
 func (document *XmlDocument) CreateCommentNode(data string) (comment *CommentNode) {
-	dataBytes := GetCString([]byte(data))
+	dataBytes := util.GetCString([]byte(data))
 	dataPtr := unsafe.Pointer(&dataBytes[0])
 	nodePtr := C.xmlNewComment((*C.xmlChar)(dataPtr))
 	if nodePtr != nil {
@@ -369,9 +369,9 @@ func (document *XmlDocument) CreateCommentNode(data string) (comment *CommentNod
 // While it's common to use an attribute-like syntax for processing instructions, the data
 // is actually an arbitrary string that you will need to generate or parse yourself.
 func (document *XmlDocument) CreatePINode(name, data string) (pi *ProcessingInstructionNode) {
-	nameBytes := GetCString([]byte(name))
+	nameBytes := util.GetCString([]byte(name))
 	namePtr := unsafe.Pointer(&nameBytes[0])
-	dataBytes := GetCString([]byte(data))
+	dataBytes := util.GetCString([]byte(data))
 	dataPtr := unsafe.Pointer(&dataBytes[0])
 	nodePtr := C.xmlNewDocPI(document.Ptr, (*C.xmlChar)(namePtr), (*C.xmlChar)(dataPtr))
 	if nodePtr != nil {
@@ -400,7 +400,7 @@ func (document *XmlDocument) UnparsedEntityURI(name string) (val string) {
 		return
 	}
 
-	nameBytes := GetCString([]byte(name))
+	nameBytes := util.GetCString([]byte(name))
 	namePtr := unsafe.Pointer(&nameBytes[0])
 	entity := C.xmlGetDocEntity(document.Ptr, (*C.xmlChar)(namePtr))
 	if entity == nil {
