@@ -6,7 +6,7 @@ import "C"
 
 import (
 	"errors"
-	 "github.com/profects/gokogiri/util"
+	. "github.com/profects/gokogiri/util"
 	"github.com/profects/gokogiri/xpath"
 	"strconv"
 	"unsafe"
@@ -401,7 +401,7 @@ func (xmlNode *XmlNode) SetContent(content interface{}) (err error) {
 	case string:
 		err = xmlNode.SetContent([]byte(data))
 	case []byte:
-		contentBytes := util.GetCString(data)
+		contentBytes := GetCString(data)
 		contentPtr := unsafe.Pointer(&contentBytes[0])
 		C.xmlSetContent(unsafe.Pointer(xmlNode), unsafe.Pointer(xmlNode.Ptr), contentPtr)
 	}
@@ -481,7 +481,7 @@ func (xmlNode *XmlNode) Attribute(name string) (attribute *AttributeNode) {
 	if xmlNode.NodeType() != XML_ELEMENT_NODE {
 		return
 	}
-	nameBytes := util.GetCString([]byte(name))
+	nameBytes := GetCString([]byte(name))
 	namePtr := unsafe.Pointer(&nameBytes[0])
 	attrPtr := C.xmlHasNsProp(xmlNode.Ptr, (*C.xmlChar)(namePtr), nil)
 	if attrPtr == nil {
@@ -503,7 +503,7 @@ func (xmlNode *XmlNode) Attr(name string) (val string) {
 	if xmlNode.NodeType() != XML_ELEMENT_NODE {
 		return
 	}
-	nameBytes := util.GetCString([]byte(name))
+	nameBytes := GetCString([]byte(name))
 	namePtr := unsafe.Pointer(&nameBytes[0])
 	valPtr := C.xmlGetProp(xmlNode.Ptr, (*C.xmlChar)(namePtr))
 	if valPtr == nil {
@@ -528,10 +528,10 @@ func (xmlNode *XmlNode) SetAttr(name, value string) (val string) {
 	if xmlNode.NodeType() != XML_ELEMENT_NODE {
 		return
 	}
-	nameBytes := util.GetCString([]byte(name))
+	nameBytes := GetCString([]byte(name))
 	namePtr := unsafe.Pointer(&nameBytes[0])
 
-	valueBytes := util.GetCString([]byte(value))
+	valueBytes := GetCString([]byte(value))
 	valuePtr := unsafe.Pointer(&valueBytes[0])
 
 	C.xmlSetProp(xmlNode.Ptr, (*C.xmlChar)(namePtr), (*C.xmlChar)(valuePtr))
@@ -550,13 +550,13 @@ func (xmlNode *XmlNode) SetNsAttr(href, name, value string) (val string) {
 	if xmlNode.NodeType() != XML_ELEMENT_NODE {
 		return
 	}
-	nameBytes := util.GetCString([]byte(name))
+	nameBytes := GetCString([]byte(name))
 	namePtr := unsafe.Pointer(&nameBytes[0])
 
-	valueBytes := util.GetCString([]byte(value))
+	valueBytes := GetCString([]byte(value))
 	valuePtr := unsafe.Pointer(&valueBytes[0])
 
-	hrefBytes := util.GetCString([]byte(href))
+	hrefBytes := GetCString([]byte(href))
 	hrefPtr := unsafe.Pointer(&hrefBytes[0])
 
 	ns := C.xmlSearchNsByHref((*C.xmlDoc)(xmlNode.Document.DocPtr()), xmlNode.Ptr, (*C.xmlChar)(hrefPtr))
@@ -735,7 +735,7 @@ func (xmlNode *XmlNode) Namespace() (href string) {
 // Set the local name of the node. The namespace is set via SetNamespace().
 func (xmlNode *XmlNode) SetName(name string) {
 	if len(name) > 0 {
-		nameBytes := util.GetCString([]byte(name))
+		nameBytes := GetCString([]byte(name))
 		namePtr := unsafe.Pointer(&nameBytes[0])
 		C.xmlNodeSetName(xmlNode.Ptr, (*C.xmlChar)(namePtr))
 	}
@@ -1091,7 +1091,7 @@ func (xmlNode *XmlNode) DeclareNamespace(prefix, href string) {
 	if xmlNode.NodeType() != XML_ELEMENT_NODE {
 		return
 	}
-	hrefBytes := util.GetCString([]byte(href))
+	hrefBytes := GetCString([]byte(href))
 	hrefPtr := unsafe.Pointer(&hrefBytes[0])
 
 	//if the namespace is already declared using this prefix, just return
@@ -1104,7 +1104,7 @@ func (xmlNode *XmlNode) DeclareNamespace(prefix, href string) {
 		}
 	}
 
-	prefixBytes := util.GetCString([]byte(prefix))
+	prefixBytes := GetCString([]byte(prefix))
 	prefixPtr := unsafe.Pointer(&prefixBytes[0])
 	if prefix == "" {
 		prefixPtr = nil
@@ -1120,13 +1120,13 @@ func (xmlNode *XmlNode) SetNamespace(prefix, href string) {
 		return
 	}
 
-	prefixBytes := util.GetCString([]byte(prefix))
+	prefixBytes := GetCString([]byte(prefix))
 	prefixPtr := unsafe.Pointer(&prefixBytes[0])
 	if prefix == "" {
 		prefixPtr = nil
 	}
 
-	hrefBytes := util.GetCString([]byte(href))
+	hrefBytes := GetCString([]byte(href))
 	hrefPtr := unsafe.Pointer(&hrefBytes[0])
 
 	// use the existing namespace declaration if there is one

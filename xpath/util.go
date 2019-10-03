@@ -14,7 +14,7 @@ import "C"
 
 import "unsafe"
 import "reflect"
-import "github.com/profects/gokogiri/util"
+import . "github.com/profects/gokogiri/util"
 
 //export go_resolve_variables
 func go_resolve_variables(ctxt unsafe.Pointer, name, ns *C.char) (ret C.xmlXPathObjectPtr) {
@@ -55,7 +55,7 @@ func ValueToXPathObject(val interface{}) (ret C.xmlXPathObjectPtr) {
 	case float64:
 		ret = C.xmlXPathNewFloat(C.double(v))
 	case string:
-		xpathBytes := util.GetCString([]byte(v))
+		xpathBytes := GetCString([]byte(v))
 		xpathPtr := unsafe.Pointer(&xpathBytes[0])
 		ret = C.xmlXPathNewString((*C.xmlChar)(xpathPtr))
 	default:
