@@ -32,7 +32,7 @@ char *check_xpath_syntax(const char *xpath) {
 */
 import "C"
 import "unsafe"
-import . "github.com/profects/gokogiri/util"
+import "github.com/profects/gokogiri/util"
 
 //import "runtime"
 import "errors"
@@ -58,7 +58,7 @@ func Compile(path string) (expr *Expression) {
 		return
 	}
 
-	xpathBytes := GetCString([]byte(path))
+	xpathBytes := util.GetCString([]byte(path))
 	xpathPtr := unsafe.Pointer(&xpathBytes[0])
 	ptr := C.xmlXPathCompile((*C.xmlChar)(xpathPtr))
 	if ptr == nil {
